@@ -38,3 +38,9 @@ env_logger = "0.7.1"
 rust-crypto = "^0.2.36"
 tempdir = "0.3.7"
 rand = "0.7.3"
+criterion = "0.3"
+
+[[bench]]
+name = "merkle"
+path = "benches/merkle.rs"
+harness = false
