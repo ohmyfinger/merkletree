@@ -32,35 +32,21 @@ impl_write! {
     (i32, write_i32),
     (i64, write_i64),
     (isize, write_isize),
-    // unstable: (u128, write_u128),
-    // unstable: (i128, write_i128),
+    (u128, write_u128),
+    (i128, write_i128),
 }
 
-macro_rules! impl_array {
-    ($ty:ident $($N:expr)+) => {$(
-        impl<H: Hasher> Hashable<H> for [$ty; $N] {
-            fn hash(&self, state: &mut H) {
-                state.write(self.as_ref())
-            }
+impl<H: Hasher, const N: usize> Hashable<H> for [u8; N] {
+    fn hash(&self, state: &mut H) {
+        state.write(self.as_ref())
+    }
 
-            #[allow(trivial_casts, unsafe_code)]
-            fn hash_slice(data: &[[$ty; $N]], state: &mut H) {
-                let newlen = data.len() * mem::size_of::<[$ty; $N]>();
-                let ptr = data.as_ptr() as *const u8;
-                state.write(unsafe { slice::from_raw_parts(ptr, newlen) })
-            }
-        }
-    )*}
-}
-
-impl_array! { u8
-  1  2  3  4  5  6  7  8  9 10
- 11 12 13 14 15 16 17 18 19 20
- 21 22 23 24 25 26 27 28 29 30
- 31 32 33 34 35 36 37 38 39 40
- 41 42 43 44 45 46 47 48 49 50
- 51 52 53 54 55 56 57 58 59 60
- 61 62 63 64
+    #[allow(trivial_casts, unsafe_code)]
+    fn hash_slice(data: &[[u8; N]], state: &mut H) {
+        let newlen = data.len() * mem::size_of::<[u8; N]>();
+        let ptr = data.as_ptr() as *const u8;
+        state.write(unsafe { slice::from_raw_parts(ptr, newlen) })
+    }
 }
 
 impl<H: Hasher> Hashable<H> for Vec<u8> {
