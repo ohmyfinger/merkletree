@@ -420,6 +420,10 @@ pub trait Store<E: Element>: std::fmt::Debug + Send + Sync + Sized {
         // Return the root
         self.last()
     }
+
+    fn prefetch_proof(&self, _index: usize) -> Result<()> {
+        Ok(())
+    }
 }
 
 // Using a macro as it is not possible to do a generic implementation for all stores.

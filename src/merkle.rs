@@ -927,13 +927,14 @@ impl<
         match &self.data {
             Data::TopTree(_) => self.gen_sub_tree_proof(i, true, TopTreeArity::to_usize()),
             Data::SubTree(_) => self.gen_sub_tree_proof(i, false, SubTreeArity::to_usize()),
-            Data::BaseTree(_) => {
+            Data::BaseTree(store) => {
                 ensure!(
                     i < self.leafs,
                     "{} is out of bounds (max: {})",
                     i,
                     self.leafs
                 ); // i in [0 .. self.leafs)
+                store.prefetch_proof(i)?;
 
                 let mut base = 0;
                 let mut j = i;
