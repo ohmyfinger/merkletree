@@ -203,6 +203,10 @@ pub trait Store<E: Element>: std::fmt::Debug + Send + Sync + Sized {
     fn new_with_config(size: usize, branches: usize, config: StoreConfig) -> Result<Self>;
     fn new(size: usize) -> Result<Self>;
 
+    fn new_with_sector_info(_sector_id: u64, _index: u64) -> Result<Self> {
+        unimplemented!()
+    }
+
     fn new_from_slice_with_config(
         size: usize,
         branches: usize,
