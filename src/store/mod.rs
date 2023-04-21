@@ -425,7 +425,11 @@ pub trait Store<E: Element>: std::fmt::Debug + Send + Sync + Sized {
         self.last()
     }
 
-    fn prefetch_proof(&self, _index: usize) -> Result<()> {
+    fn prefetch(&self) -> Result<()> {
+        Ok(())
+    }
+
+    fn prepare_proof(&self, _index: usize) -> Result<()> {
         Ok(())
     }
 }

@@ -927,14 +927,14 @@ impl<
         match &self.data {
             Data::TopTree(_) => self.gen_sub_tree_proof(i, true, TopTreeArity::to_usize()),
             Data::SubTree(_) => self.gen_sub_tree_proof(i, false, SubTreeArity::to_usize()),
-            Data::BaseTree(store) => {
+            Data::BaseTree(_) => {
                 ensure!(
                     i < self.leafs,
                     "{} is out of bounds (max: {})",
                     i,
                     self.leafs
                 ); // i in [0 .. self.leafs)
-                store.prefetch_proof(i)?;
+                   //store.prefetch_proof(i)?;
 
                 let mut base = 0;
                 let mut j = i;
@@ -996,6 +996,20 @@ impl<
                 Proof::new::<U0, U0>(None, lemma, path)
             }
         }
+    }
+
+    pub fn prepare_proof(&self, index: usize) -> Result<()> {
+        if let Data::BaseTree(store) = &self.data {
+            store.prepare_proof(index)?;
+        }
+        Ok(())
+    }
+
+    pub fn prefetch(&self) -> Result<()> {
+        if let Data::BaseTree(store) = &self.data {
+            store.prefetch()?;
+        }
+        Ok(())
     }
 
     /// Generate merkle sub-tree inclusion proof for leaf `i` using
