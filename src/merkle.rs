@@ -1034,7 +1034,7 @@ impl<
 
     pub fn prepare_proof(&self, index: usize) -> Result<()> {
         match &self.data {
-            Data::TopTree(_) => {
+            Data::TopTree(data) => {
                 self.prepare_sub_tree_proof(index, true, TopTreeArity::to_usize())?;
             }
             Data::SubTree(_) => {
@@ -1048,8 +1048,20 @@ impl<
     }
 
     pub fn prefetch(&self) -> Result<()> {
-        if let Data::BaseTree(store) = &self.data {
-            store.prefetch()?;
+        match &self.data {
+            Data::TopTree(data) => {
+                for tree in data.iter() {
+                    tree.prefetch()?;
+                }
+            }
+            Data::SubTree(data) => {
+                for tree in data.iter() {
+                    tree.prefetch()?;
+                }
+            }
+            Data::BaseTree(store) => {
+                store.prefetch()?;
+            }
         }
         Ok(())
     }
