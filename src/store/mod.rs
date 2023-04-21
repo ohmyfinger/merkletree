@@ -432,6 +432,10 @@ pub trait Store<E: Element>: std::fmt::Debug + Send + Sync + Sized {
     fn prepare_proof(&self, _index: usize) -> Result<()> {
         Ok(())
     }
+
+    fn prepare_read(&self, _index: usize) -> Result<()> {
+        Ok(())
+    }
 }
 
 // Using a macro as it is not possible to do a generic implementation for all stores.

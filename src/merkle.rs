@@ -998,9 +998,51 @@ impl<
         }
     }
 
+    fn prepare_sub_tree_proof(&self, i: usize, top_layer: bool, arity: usize) -> Result<()> {
+        ensure!(arity != 0, "Invalid sub-tree arity");
+
+        // Locate the sub-tree the leaf is contained in.
+        let tree_index = i / (self.leafs / arity);
+
+        // Generate the sub tree proof at this tree level.
+        if top_layer {
+            let sub_trees = self
+                .data
+                .sub_trees()
+                .context("sub trees are required to be initialised")?;
+            ensure!(arity == sub_trees.len(), "Top layer tree shape mis-match");
+
+            let tree = &sub_trees[tree_index];
+            let leaf_index = i % tree.leafs();
+
+            tree.prepare_proof(leaf_index)?;
+        } else {
+            let base_trees = self
+                .data
+                .base_trees()
+                .context("base trees are required to be initialised")?;
+            ensure!(arity == base_trees.len(), "Sub tree layer shape mis-match");
+
+            let tree = &base_trees[tree_index];
+            let leaf_index = i % tree.leafs();
+
+            tree.prepare_proof(leaf_index)?;
+        }
+
+        Ok(())
+    }
+
     pub fn prepare_proof(&self, index: usize) -> Result<()> {
-        if let Data::BaseTree(store) = &self.data {
-            store.prepare_proof(index)?;
+        match &self.data {
+            Data::TopTree(_) => {
+                self.prepare_sub_tree_proof(index, true, TopTreeArity::to_usize())?;
+            }
+            Data::SubTree(_) => {
+                self.prepare_sub_tree_proof(index, false, SubTreeArity::to_usize())?;
+            }
+            Data::BaseTree(store) => {
+                store.prepare_proof(index)?;
+            }
         }
         Ok(())
     }
