@@ -1034,7 +1034,7 @@ impl<
 
     pub fn prepare_proof(&self, index: usize) -> Result<()> {
         match &self.data {
-            Data::TopTree(data) => {
+            Data::TopTree(_) => {
                 self.prepare_sub_tree_proof(index, true, TopTreeArity::to_usize())?;
             }
             Data::SubTree(_) => {
